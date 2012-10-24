@@ -668,49 +668,72 @@ _html2canvas.Parse = function ( images, options ) {
                     case 0:
                         // top border
                         bh = borders[0].width;
-                        
+
                         i = 0;
-                        borderArgs[ i++ ] = [ "line", bx, by ];  // top left
-                        borderArgs[ i++ ] = [ "line", bx + bw, by ]; // top right
-                        borderArgs[ i++ ] = [ "line", bx + bw - borders[ 1 ].width, by + bh  ]; // bottom right
-                        borderArgs[ i++ ] = [ "line", bx + borders[ 3 ].width, by + bh ]; // bottom left
-                        
+                        borderArgs[ i++ ] = [ "line", bx + borderRadius[0][0], by ];  // top left
+                        borderArgs[ i++ ] = [ "line", bx + bw - borderRadius[1][0], by ]; // top right + radius
+
+                        // top right rounded
+                        borderArgs[ i++ ] = [ "arc", bx + bw, by,  bx + bw, by + borderRadius[1][0], borderRadius[1][0]]; // top right rounded corner
+                        borderArgs[ i++ ] = [ "line", bx + bw - borders[1].width, by + borderRadius[1][0]];
+                        borderArgs[ i++ ] = [ "arc", bx + bw - bh, by + bh, bx + bw - borderRadius[1][0], by + bh, borderRadius[1][0] - bh]; // top right rounded corner
+
+                        borderArgs[ i++ ] = [ "line", bx + bw - borders[ 1 ].width - borderRadius[1][0], by + bh  ]; // bottom right + radius
+                        borderArgs[ i++ ] = [ "line", bx + borderRadius[0][0], by + bh ]; // bottom left
+
+
                         break;
                     case 1:
                         // right border
                         bx = x + w - (borders[1].width);
                         bw = borders[1].width;
-                        
+
                         i = 0;
-                        borderArgs[ i++ ] = [ "line", bx, by + borders[ 0 ].width];  // top left
-                        borderArgs[ i++ ] = [ "line", bx + bw, by ]; // top right
-                        borderArgs[ i++ ] = [ "line", bx + bw, by + bh + borders[ 2 ].width ]; // bottom right
-                        borderArgs[ i++ ] = [ "line", bx, by + bh ]; // bottom left
-                        
+                        borderArgs[ i++ ] = [ "line", bx, by + borderRadius[1][0] - bw];  // top left
+                        borderArgs[ i++ ] = [ "line", bx + bw, by + borderRadius[1][0] ]; // top right
+                        borderArgs[ i++ ] = [ "line", bx + bw, by + bh + borders[ 2 ].width - borderRadius[2][0] ]; // bottom right
+
+                        // bottom right rounded
+                        borderArgs[ i++ ] = ["arc", bx + bw, by + bh + borders[ 2 ].width, by + bh + borders[ 2 ].width + borderRadius[2][0], by + bh + borders[ 2 ].width, borderRadius[2][0]];
+                        borderArgs[ i++ ] = ["line", by + bh + borders[ 2 ].width + borderRadius[2][0], by + bh];
+                        borderArgs[ i++ ] = ["arc", bx, by + bh, bx, by + bh + borders[ 2 ].width - borderRadius[2][0], borderRadius[2][0] - bw];
+
+                        borderArgs[ i++ ] = [ "line", bx, by + bh + borders[ 2 ].width - borderRadius[2][0] ]; // bottom left
+
                         break;
                     case 2:
                         // bottom border
                         by = (by + h) - (borders[2].width);
                         bh = borders[2].width;
-                                             
-                                    
+
                         i = 0;
-                        borderArgs[ i++ ] = [ "line", bx + borders[ 3 ].width, by ];  // top left
-                        borderArgs[ i++ ] = [ "line", bx + bw - borders[ 2 ].width, by ]; // top right
-                        borderArgs[ i++ ] = [ "line", bx + bw, by + bh ]; // bottom right
-                        borderArgs[ i++ ] = [ "line", bx, by + bh ]; // bottom left
-                        
+                        borderArgs[ i++ ] = [ "line", bx + borderRadius[3][0] + borders[ 3 ].width, by ];  // top left
+                        borderArgs[ i++ ] = [ "line", bx + bw - borderRadius[2][0], by ]; // top right
+                        borderArgs[ i++ ] = [ "line", bx + bw - borderRadius[2][0], by + bh ]; // bottom right
+                        borderArgs[ i++ ] = [ "line", bx + borderRadius[3][0], by + bh ]; // bottom left
+
+                        // bottom left rounded
+                        borderArgs[ i++ ] = [ "arc", bx, by, bx, by - borderRadius[3][0], borderRadius[3][0]];
+                        borderArgs[ i++ ] = [ "line", bx + borders[ 3 ].width, by - borderRadius[3][0]];
+                        borderArgs[ i++ ] = [ "arc", bx + borders[ 3 ].width, by, bx + borderRadius[3][0], by, borderRadius[3][0] - borders[3].width];
+
                         break;
                     case 3:
                         // left border
                         bw = borders[3].width;
-                        
+
                         i = 0;
-                        borderArgs[ i++ ] = [ "line", bx, by ];  // top left
-                        borderArgs[ i++ ] = [ "line", bx + bw, by + borders[ 0 ].width ]; // top right
-                        borderArgs[ i++ ] = [ "line", bx + bw, by + bh ]; // bottom right
-                        borderArgs[ i++ ] = [ "line", bx, by + bh + borders[ 2 ].width ]; // bottom left
-                        
+                        borderArgs[ i++ ] = [ "line", bx, by + borderRadius[0][0] ];  // top left
+
+                        // top left rounded
+                        borderArgs[ i++ ] = [ "arc", bx, by, bx + borderRadius[0][0], by, borderRadius[0][0]];
+                        borderArgs[ i++ ] = [ "line", bx + borderRadius[0][0], by + borders[0].width];
+                        borderArgs[ i++ ] = [ "arc", bx + bw, by + bw, bx + bw, by + borders[ 0 ].width + borderRadius[0][0], borderRadius[0][0] - bw];
+
+                        borderArgs[ i++ ] = [ "line", bx + bw, by + borders[ 0 ].width + borderRadius[3][0] ]; // top right
+                        borderArgs[ i++ ] = [ "line", bx + bw, by + bh - borderRadius[3][0] ]; // bottom right
+                        borderArgs[ i++ ] = [ "line", bx, by + bh + borders[ 3 ].width - borderRadius[3][0] ]; // bottom left
+
                         break;
                 }
 
