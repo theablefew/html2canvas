@@ -674,9 +674,11 @@ _html2canvas.Parse = function ( images, options ) {
                         borderArgs[ i++ ] = [ "line", bx + bw - borderRadius[1][0], by ]; // top right + radius
 
                         // top right rounded
-                        borderArgs[ i++ ] = [ "arc", bx + bw, by,  bx + bw, by + borderRadius[1][0], borderRadius[1][0]]; // top right rounded corner
-                        borderArgs[ i++ ] = [ "line", bx + bw - borders[1].width, by + borderRadius[1][0]];
-                        borderArgs[ i++ ] = [ "arc", bx + bw - bh, by + bh, bx + bw - borderRadius[1][0], by + bh, borderRadius[1][0] - bh]; // top right rounded corner
+                        if(borderRadius[1][0] - bh >= 0) {
+                            borderArgs[ i++ ] = [ "arc", bx + bw, by,  bx + bw, by + borderRadius[1][0], borderRadius[1][0]]; // top right rounded corner
+                            borderArgs[ i++ ] = [ "line", bx + bw - borders[1].width, by + borderRadius[1][0]];
+                            borderArgs[ i++ ] = [ "arc", bx + bw - bh, by + bh, bx + bw - borderRadius[1][0], by + bh, borderRadius[1][0] - bh]; // top right rounded corner
+                        }
 
                         borderArgs[ i++ ] = [ "line", bx + bw - borders[ 1 ].width - borderRadius[1][0], by + bh  ]; // bottom right + radius
                         borderArgs[ i++ ] = [ "line", bx + borderRadius[0][0], by + bh ]; // bottom left
@@ -694,9 +696,11 @@ _html2canvas.Parse = function ( images, options ) {
                         borderArgs[ i++ ] = [ "line", bx + bw, by + bh + borders[ 2 ].width - borderRadius[2][0] ]; // bottom right
 
                         // bottom right rounded
-                        borderArgs[ i++ ] = ["arc", bx + bw, by + bh + borders[ 2 ].width, by + bh + borders[ 2 ].width + borderRadius[2][0], by + bh + borders[ 2 ].width, borderRadius[2][0]];
-                        borderArgs[ i++ ] = ["line", by + bh + borders[ 2 ].width + borderRadius[2][0], by + bh];
-                        borderArgs[ i++ ] = ["arc", bx, by + bh, bx, by + bh + borders[ 2 ].width - borderRadius[2][0], borderRadius[2][0] - bw];
+                        if(borderRadius[2][0] - bw >= 0) {
+                            borderArgs[ i++ ] = ["arc", bx + bw, by + bh + borders[ 2 ].width, bx - bh - borders[ 2 ].width - borderRadius[2][0], by + bh + borders[ 2 ].width, borderRadius[2][0]];
+                            borderArgs[ i++ ] = ["line", bx + bw - borderRadius[2][0], by + bh];
+                            borderArgs[ i++ ] = ["arc", bx, by + bh, bx, by + bh + borders[ 2 ].width - borderRadius[2][0], borderRadius[2][0] - bw];
+                        }
 
                         borderArgs[ i++ ] = [ "line", bx, by + bh + borders[ 2 ].width - borderRadius[2][0] ]; // bottom left
 
@@ -713,9 +717,11 @@ _html2canvas.Parse = function ( images, options ) {
                         borderArgs[ i++ ] = [ "line", bx + borderRadius[3][0], by + bh ]; // bottom left
 
                         // bottom left rounded
-                        borderArgs[ i++ ] = [ "arc", bx, by, bx, by - borderRadius[3][0], borderRadius[3][0]];
-                        borderArgs[ i++ ] = [ "line", bx + borders[ 3 ].width, by - borderRadius[3][0]];
-                        borderArgs[ i++ ] = [ "arc", bx + borders[ 3 ].width, by, bx + borderRadius[3][0], by, borderRadius[3][0] - borders[3].width];
+                        if(borderRadius[3][0] - bh >= 0) {
+                            borderArgs[ i++ ] = [ "arc", bx, by, bx, by - borderRadius[3][0], borderRadius[3][0]];
+                            borderArgs[ i++ ] = [ "line", bx + borders[ 3 ].width, by - borderRadius[3][0]];
+                            borderArgs[ i++ ] = [ "arc", bx + borders[ 3 ].width, by, bx + borderRadius[3][0], by, borderRadius[3][0] - bh];
+                        }
 
                         break;
                     case 3:
@@ -723,12 +729,15 @@ _html2canvas.Parse = function ( images, options ) {
                         bw = borders[3].width;
 
                         i = 0;
+
                         borderArgs[ i++ ] = [ "line", bx, by + borderRadius[0][0] ];  // top left
 
                         // top left rounded
-                        borderArgs[ i++ ] = [ "arc", bx, by, bx + borderRadius[0][0], by, borderRadius[0][0]];
-                        borderArgs[ i++ ] = [ "line", bx + borderRadius[0][0], by + borders[0].width];
-                        borderArgs[ i++ ] = [ "arc", bx + bw, by + bw, bx + bw, by + borders[ 0 ].width + borderRadius[0][0], borderRadius[0][0] - bw];
+                        if (borderRadius[0][0] - bw >= 0) {
+                            borderArgs[ i++ ] = [ "arc", bx, by, bx + borderRadius[0][0], by, borderRadius[0][0]];
+                            borderArgs[ i++ ] = [ "line", bx + borderRadius[0][0], by + borders[0].width];
+                            borderArgs[ i++ ] = [ "arc", bx + bw, by + bw, bx + bw, by + borders[ 0 ].width + borderRadius[0][0], borderRadius[0][0] - bw];
+                        }
 
                         borderArgs[ i++ ] = [ "line", bx + bw, by + borders[ 0 ].width + borderRadius[3][0] ]; // top right
                         borderArgs[ i++ ] = [ "line", bx + bw, by + bh - borderRadius[3][0] ]; // bottom right
