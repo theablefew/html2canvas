@@ -533,23 +533,62 @@ _html2canvas.Parse = function ( images, options ) {
                 x = elBounds.left;
 
             }else{
-                return;
-            /*
-                 TODO really need to figure out some more accurate way to try and find the position.
-                 as defined in http://www.w3.org/TR/CSS21/generate.html#propdef-list-style-position, it does not even have a specified "correct" position, so each browser
-                 may display it whatever way it feels like.
-                 "The position of the list-item marker adjacent to floats is undefined in CSS 2.1. CSS 2.1 does not specify the precise location of the marker box or its position in the painting order"
+                /*
+                     TODO really need to figure out some more accurate way to try and find the position.
+                     as defined in http://www.w3.org/TR/CSS21/generate.html#propdef-list-style-position, it does not even have a specified "correct" position, so each browser
+                     may display it whatever way it feels like.
+                     "The position of the list-item marker adjacent to floats is undefined in CSS 2.1. CSS 2.1 does not specify the precise location of the marker box or its position in the painting order"
+                */
 
                 ctx.setVariable("textAlign", "right");
-                //  this.setFont(stack.ctx, element, true);
                 x = elBounds.left - 10;
-                 */
+
             }
 
             y = listBounds.bottom;
 
             drawText(text, x, y, ctx);
 
+
+        } else {
+
+            currentIndex = elementIndex( element );
+
+            listBounds = listPosition(element, text);
+            var size = parseInt(getCSS(element, 'fontSize').match(/[0-9]+/g));
+            size = Math.floor(size/3);
+
+            ctx.setVariable( "fillStyle", getCSS(element, "color") );
+
+            if ( position === "inside" ) {
+                
+                x = elBounds.left;
+
+            }else{
+
+                x = elBounds.left - 10;
+            }
+
+            y = listBounds.top + (listBounds.bottom -listBounds.top)*.45;
+
+            switch(type) {
+                case 'disc':
+                    var disk = ctx.drawShape();
+                    disk.arc(x, y, size/2, 0, 2 * Math.PI);
+                    break;
+                case 'circle':
+                    ctx.setVariable('fillStyle', 'none');
+                    var disk = ctx.drawShape();
+                        disk.arc(x, y, size/2, 0, 2 * Math.PI);
+                        disk.stroke();
+                    break;
+                case 'square':
+                    ctx.fillRect(x, y, size, size);
+                    break;
+
+            }
+
+            numDraws+=1;
 
         }
 
@@ -633,6 +672,7 @@ _html2canvas.Parse = function ( images, options ) {
             for (s = 0; s < 4; s+=1){
                 borders.push({
                     width: getCSSInt(el, 'border' + sides[s] + 'Width'),
+                    style: getCSS(el, 'border' + sides[s] + 'Style'),
                     color: getCSS(el, 'border' + sides[s] + 'Color')
                 });
             }
@@ -674,15 +714,22 @@ _html2canvas.Parse = function ( images, options ) {
                         borderArgs[ i++ ] = [ "line", bx + bw - borderRadius[1][0], by ]; // top right + radius
 
                         // top right rounded
-                        if(borderRadius[1][0] - bh >= 0) {
+                        if(borderRadius[1][0] > 0) {
+
+                            var inner_rad = (borderRadius[1][0] - bh <= 0) ? 0 : borderRadius[1][0] - bh;
+
                             borderArgs[ i++ ] = [ "arc", bx + bw, by,  bx + bw, by + borderRadius[1][0], borderRadius[1][0]]; // top right rounded corner
-                            borderArgs[ i++ ] = [ "line", bx + bw - borders[1].width, by + borderRadius[1][0]];
-                            borderArgs[ i++ ] = [ "arc", bx + bw - bh, by + bh, bx + bw - borderRadius[1][0], by + bh, borderRadius[1][0] - bh]; // top right rounded corner
+                            borderArgs[ i++ ] = [ "line", bx + bw - borders[1].width, by + borderRadius[1][0] + bh ];
+                            borderArgs[ i++ ] = [ "arc", bx + bw - bh, by + bh, inner_rad, by + bh, inner_rad]; // top right rounded corner
                         }
 
                         borderArgs[ i++ ] = [ "line", bx + bw - borders[ 1 ].width - borderRadius[1][0], by + bh  ]; // bottom right + radius
-                        borderArgs[ i++ ] = [ "line", bx + borderRadius[0][0], by + bh ]; // bottom left
 
+                        if(borderRadius[1][0] - bh >= 0) {
+                            borderArgs[ i++ ] = [ "line", bx + borderRadius[0][0], by + bh ]; // bottom left
+                        } else {
+                            borderArgs[ i++ ] = [ "line", bx + borders[3].width + borderRadius[0][0], by + bh ]; // bottom left
+                        }
 
                         break;
                     case 1:
@@ -691,18 +738,26 @@ _html2canvas.Parse = function ( images, options ) {
                         bw = borders[1].width;
 
                         i = 0;
-                        borderArgs[ i++ ] = [ "line", bx, by + borderRadius[1][0] - bw];  // top left
+                        if(borderRadius[2][0] - bw >= 0) {
+                            borderArgs[ i++ ] = [ "line", bx, by + borderRadius[1][0]];  // top left
+                        } else {
+                            borderArgs[ i++ ] = [ "line", bx, by + borderRadius[1][0] + borders[0].width];  // top left
+                        }
+                        
                         borderArgs[ i++ ] = [ "line", bx + bw, by + borderRadius[1][0] ]; // top right
                         borderArgs[ i++ ] = [ "line", bx + bw, by + bh + borders[ 2 ].width - borderRadius[2][0] ]; // bottom right
 
                         // bottom right rounded
-                        if(borderRadius[2][0] - bw >= 0) {
+                        if(borderRadius[2][0] > 0) {
+
+                            var inner_rad = (borderRadius[2][0] - bw <= 0) ? 0 : borderRadius[2][0] - bw;
+
                             borderArgs[ i++ ] = ["arc", bx + bw, by + bh + borders[ 2 ].width, bx - bh - borders[ 2 ].width - borderRadius[2][0], by + bh + borders[ 2 ].width, borderRadius[2][0]];
-                            borderArgs[ i++ ] = ["line", bx + bw - borderRadius[2][0], by + bh];
-                            borderArgs[ i++ ] = ["arc", bx, by + bh, bx, by + bh + borders[ 2 ].width - borderRadius[2][0], borderRadius[2][0] - bw];
+                            borderArgs[ i++ ] = ["line", bx - borderRadius[2][0], by + bh];
+                            borderArgs[ i++ ] = ["arc", bx, by + bh, bx, by + bh + borders[ 2 ].width - borderRadius[2][0], inner_rad];
                         }
 
-                        borderArgs[ i++ ] = [ "line", bx, by + bh + borders[ 2 ].width - borderRadius[2][0] ]; // bottom left
+                        borderArgs[ i++ ] = [ "line", bx, by + bh - borderRadius[2][0] ]; // bottom left
 
                         break;
                     case 2:
@@ -711,16 +766,26 @@ _html2canvas.Parse = function ( images, options ) {
                         bh = borders[2].width;
 
                         i = 0;
+                        
                         borderArgs[ i++ ] = [ "line", bx + borderRadius[3][0] + borders[ 3 ].width, by ];  // top left
-                        borderArgs[ i++ ] = [ "line", bx + bw - borderRadius[2][0], by ]; // top right
+                        
+                        if(borderRadius[3][0] - bh >= 0) {
+                            borderArgs[ i++ ] = [ "line", bx + bw - borderRadius[2][0], by ]; // top right
+                        } else {
+                            borderArgs[ i++ ] = [ "line", bx + bw - borderRadius[2][0] - borders[1].width, by ]; // top right
+                        }
+                        
                         borderArgs[ i++ ] = [ "line", bx + bw - borderRadius[2][0], by + bh ]; // bottom right
                         borderArgs[ i++ ] = [ "line", bx + borderRadius[3][0], by + bh ]; // bottom left
 
                         // bottom left rounded
-                        if(borderRadius[3][0] - bh >= 0) {
-                            borderArgs[ i++ ] = [ "arc", bx, by, bx, by - borderRadius[3][0], borderRadius[3][0]];
-                            borderArgs[ i++ ] = [ "line", bx + borders[ 3 ].width, by - borderRadius[3][0]];
-                            borderArgs[ i++ ] = [ "arc", bx + borders[ 3 ].width, by, bx + borderRadius[3][0], by, borderRadius[3][0] - bh];
+                        if(borderRadius[3][0] > 0) {
+
+                            var inner_rad = (borderRadius[3][0] - bh <= 0) ? 0 : borderRadius[3][0] - bh;
+
+                            borderArgs[ i++ ] = [ "arc", bx, by + borders[ 3 ].width, bx, by - borderRadius[3][0], borderRadius[3][0]];
+                            borderArgs[ i++ ] = [ "line", bx + borders[ 3 ].width, by - inner_rad - borderRadius[3][0] ];
+                            borderArgs[ i++ ] = [ "arc", bx + borders[ 3 ].width, by, bx + borderRadius[3][0], by, inner_rad];
                         }
 
                         break;
@@ -733,15 +798,24 @@ _html2canvas.Parse = function ( images, options ) {
                         borderArgs[ i++ ] = [ "line", bx, by + borderRadius[0][0] ];  // top left
 
                         // top left rounded
-                        if (borderRadius[0][0] - bw >= 0) {
+                        if (borderRadius[0][0] >= 0) {
+
+                            var inner_rad = (borderRadius[0][0] - bw < 0) ? 0 : borderRadius[0][0] - bw;
+
                             borderArgs[ i++ ] = [ "arc", bx, by, bx + borderRadius[0][0], by, borderRadius[0][0]];
-                            borderArgs[ i++ ] = [ "line", bx + borderRadius[0][0], by + borders[0].width];
-                            borderArgs[ i++ ] = [ "arc", bx + bw, by + bw, bx + bw, by + borders[ 0 ].width + borderRadius[0][0], borderRadius[0][0] - bw];
+                            borderArgs[ i++ ] = [ "line", bx + bw + borderRadius[0][0], by + borders[0].width];
+                            borderArgs[ i++ ] = [ "arc", bx + bw, by + bw, bx + bw, by + borders[ 0 ].width + borderRadius[0][0], inner_rad];
                         }
 
                         borderArgs[ i++ ] = [ "line", bx + bw, by + borders[ 0 ].width + borderRadius[3][0] ]; // top right
-                        borderArgs[ i++ ] = [ "line", bx + bw, by + bh - borderRadius[3][0] ]; // bottom right
-                        borderArgs[ i++ ] = [ "line", bx, by + bh + borders[ 3 ].width - borderRadius[3][0] ]; // bottom left
+                        
+                        if(borderRadius[0][0] > 0) {
+                            borderArgs[ i++ ] = [ "line", bx + bw, by + bh - borderRadius[3][0] ]; // bottom right
+                        } else {
+                            borderArgs[ i++ ] = [ "line", bx + bw, by + bh - borderRadius[3][0] ]; // bottom right
+                        }
+                        
+                        borderArgs[ i++ ] = [ "line", bx, by + bh + borders[ 2 ].width - borderRadius[3][0] ]; // bottom left
 
                         break;
                 }
@@ -761,6 +835,104 @@ _html2canvas.Parse = function ( images, options ) {
                 if ( borderBounds.width > 0 && borderBounds.height > 0 ) {
                     
                     if ( borderData.color !== "transparent" ){
+
+                        switch( borderData.style) {
+
+                            case 'double':
+                                var pattern = document.createElement('canvas');
+                                var bw = borderData.width;
+                                var bs = borderSide % 2;
+                                var offset_x = (bs) ? bw - (x % bw) : 0;
+                                var offset_y = (bs) ? 0 : bw - (y % bw);
+                                var sw = Math.round(bw/3);
+                                
+                                pattern.width = pattern.height = bw * 2;
+
+                                var pattern_ctx = pattern.getContext( "2d" );
+                                pattern_ctx.fillStyle = borderData.color;
+
+                                var bar_x = ( bs ) ? bw - sw : 0;
+                                var bar_y = ( bs ) ? 0 : bw - sw;
+
+                                var bar_w = ( bs ) ? sw : bw;
+                                var bar_h = ( bs ) ? bw : sw;
+
+                                pattern_ctx.fillRect(0, 0, bar_w, bar_h);
+                                pattern_ctx.fillRect(bar_x, bar_y, bar_w, bar_h);
+
+                                var tx = (bs) ? bw : 0;
+                                var ty = (bs) ? 0 : bw;
+
+                                pattern_ctx.translate(tx, ty);
+
+                                pattern_ctx.fillRect(0, 0, bar_w, bar_h);
+                                pattern_ctx.fillRect(bar_x, bar_y, bar_w, bar_h);
+
+                                var p = document.createElement('canvas');
+                                p.width = p.height = bw;
+
+                                var p_ctx = p.getContext('2d');
+                                p_ctx.putImageData(pattern_ctx.getImageData(offset_x, offset_y, bw, bw), 0, 0);
+
+                                var canvas_pattern = p_ctx.createPattern( p, "repeat" );
+                                borderData.color = canvas_pattern;
+                                break;
+                            case 'dashed':
+                                var pattern = document.createElement('canvas');
+                                var pattern_width = (borderSide%2) ? 3 : 6;
+                                var pattern_height = (borderSide%2) ? 6 : 3;
+                                pattern.width = borderData.width * pattern_width;
+                                pattern.height = borderData.width * pattern_height;
+
+                                var pattern_ctx = pattern.getContext( "2d" );
+                                pattern_ctx.fillStyle = borderData.color;
+                                pattern_ctx.fillRect(0, 0, borderData.width * 3, borderData.width * 3);
+                                pattern_ctx.fillRect(0, 0, borderData.width * 3, borderData.width * 3);
+
+                                var canvas_pattern = pattern_ctx.createPattern( pattern, "repeat" );
+                                borderData.color = canvas_pattern;
+                                break;
+                            case 'dotted':
+                                var pattern = document.createElement('canvas');
+                                var pattern_width = (borderSide%2) ? 1 : 2;
+                                var pattern_height = (borderSide%2) ? 2 : 1;
+                                pattern.width = borderData.width * pattern_width;
+                                pattern.height = borderData.width * pattern_height;
+
+                                var pattern_ctx = pattern.getContext( "2d" );
+                                pattern_ctx.fillStyle = borderData.color;
+                                pattern_ctx.fillRect(0, 0, borderData.width, borderData.width);
+
+                                var canvas_pattern = pattern_ctx.createPattern( pattern, "repeat" );
+
+                                borderData.color = canvas_pattern;
+                                break;
+                            case 'outset':
+                                switch(borderSide) {
+                                    case 1:
+                                    case 2: 
+                                        var rgb = borderData.color.match(/[0-9]+/g);
+                                        for (var c in rgb) {
+                                            rgb[c] = Math.floor(rgb[c]/2);
+                                        }
+                                        borderData.color = 'rgb('+rgb.toString()+')';
+                                        break;
+                                }
+                                break;
+                            case 'inset':
+                                switch(borderSide) {
+                                    case 0:
+                                    case 3:
+                                        var rgb = borderData.color.match(/[0-9]+/g);
+                                        for (var c in rgb) {
+                                            rgb[c] = Math.floor(rgb[c]/2);
+                                        }
+                                        borderData.color = 'rgb('+rgb.toString()+')';
+                                        break;
+                                }
+                                break;
+                        }
+
                         ctx.setVariable( "fillStyle", borderData.color );
                         
                         var shape = ctx.drawShape(),

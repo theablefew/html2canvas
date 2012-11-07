@@ -41,6 +41,27 @@ function h2cRenderContext(width, height) {
                         'arguments': arguments
                     });
                 },
+                fill: function () {
+                    shape.push({
+                        type: "function",
+                        name: "fill",
+                        'arguments': arguments
+                    });
+                },
+                stroke: function () {
+                    shape.push({
+                        type: "function",
+                        name: "stroke",
+                        'arguments': arguments
+                    });
+                },
+                arc: function () {
+                    shape.push({
+                        type: "function",
+                        name: "arc",
+                        'arguments': arguments
+                    });
+                },
                 arcTo: function() {
                     shape.push({
                         name: "arcTo",
