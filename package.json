@@ -1,0 +1,30 @@
+{
+  "name": "Locutus",
+  "preferGlobal": "false",
+  "version": "0.0.0",
+  "author": "The Able Few, LLC <locutus@theablefew.com>",
+  "description": "A javascript rendering engine.",
+  "contributors": [ 
+    {
+      "name": "Jason Luebke",
+      "email": "jason@theablefew.com"
+    },
+    {
+      "name": "Spencer Markowski",
+      "email": "spencer@theablefew.com" 
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/theablefew/html2canvas.git"
+  },
+  "keywords": [
+    "HTML",
+    "browser engine"
+  ],
+  "analyze": false,
+  "devDependencies": {
+    "grunt"    :  "*",
+    "grunt-clean" : "*"
+  }
+}
