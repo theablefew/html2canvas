@@ -10,6 +10,7 @@ module.exports = function(grunt) {
                    ,'src/Renderer.js'
                    ,'src/Util.js'
                    ,'renderers/Canvas.js'
+                   ,'src/html2canvas-post.txt'
                   ];
 
   grunt.initConfig({
@@ -25,7 +26,7 @@ module.exports = function(grunt) {
     concat: {
       dist: {
         src: src_files,
-        dest: 'build/html2canvas.js'
+        dest: 'build/html2canvas-grunt.js'
       }
     },
     // Min

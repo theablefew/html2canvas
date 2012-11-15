@@ -11,3 +11,4 @@ image.jpg
 /.settings/
 .envrc
 *.sublime-workspace
+node_modules/
