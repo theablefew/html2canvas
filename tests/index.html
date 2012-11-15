@@ -1,0 +1,100 @@
+<!doctype html>
+<html>
+<head>
+
+	<script src='../external/jquery-1.6.2.js' type="text/javascript"></script>
+	<script src='../build/html2canvas-grunt.js' type='text/javascript'></script>
+
+	<script type="text/javascript">
+
+	$(function () {
+		var box = $('#wrapper');
+		html2canvas(box, {
+			onrendered: function (c) {
+				$('#render').append(c);
+			}
+		})
+	});
+
+	</script>
+
+	<style type="text/css">
+
+	.box {width:200px;height:100px;padding:10px;margin:10px;}
+	.col {width:300px;float:left;margin-right:50px;}
+	input, select {margin-bottom:20px;}
+	
+
+	</style>
+
+</head>
+<body>
+
+	<div id='wrapper' class='col'>
+
+		<!-- <form>
+
+			<input name='textin' type='text' value='in text' /><br />
+
+			<input type='radio'>a radio</input><br />
+			<input type='checkbox'>a checker</input><br />
+			<input type='button' value='btn' /><br />
+
+			<select>
+				<option>foo</option>
+				<option>bar</option>
+			</select><br />
+
+			<select multiple='multiple'>
+				<option selected='selected'>foo</option>
+				<option>bar</option>
+			</select><br />
+
+			<textarea>text area</textarea> 
+		</form>
+
+		<p>para</p>
+
+		<ul>
+			<li>foo</li>
+			<li>bar</li>
+		</ul>
+
+		<ul style='list-style-position:inside;'>
+			<li>foo</li>
+			<li>bar</li>
+		</ul>
+
+		<ol>
+			<li>foo</li>
+			<li>bar</li>
+		</ol>
+
+		<ol style='list-style-position:inside'>
+			<li>foo</li>
+			<li>bar</li>
+		</ol>
+
+		<ol style='list-style-type:upper-roman'>
+			<li>foo</li>
+			<li>bar</li>
+		</ol> -->
+
+		<div class='box' style="border-width:5px 10px 15px 20px;border-radius:50px;border-style:solid;border-color:#333 #666 #999 #ccc;"></div>
+		<div class='box' style="border-width:20px 15px 10px 5px;border-radius:50px;border-style:solid;border-color:#333 #666 #999 #ccc;"></div>
+		<div class='box' style="border:20px solid;border-radius:50px;border-color:#333 #666 #999 #ccc;"></div>
+		
+		<div class='box' style="border:20px solid;border-radius:15px;border-color:#333 #666 #999 #ccc"></div>
+		<div class='box' style="border:20px double;border-color:#333 #666 #999 #ccc"></div>
+		<div class='box' style="border-style:solid;border-width:20px 15px 10px 5px;border-color:#333 #666 #999 #ccc"></div>
+		<div class='box' style="border-style:dashed;border-width:5px;border-color:#333 #666 #999 #ccc;"></div>
+		<div class='box' style="border-style:dotted;border-width:5px;border-color:#333 #666 #999 #ccc;"></div>
+		<div class='box' style="border:20px solid;border-radius:0px;border-color:#333 #666 #999 #ccc"></div>
+		<div class='box' style="border:20px inset;border-radius:0px;"></div>
+		<div class='box' style="border:20px outset;border-radius:0px;"></div>
+ 
+	</div>
+	<div id='render' class='col'></div>
+
+</body>
+</html>
