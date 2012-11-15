@@ -1,15 +1,3 @@
-/*
-  html2canvas @VERSION@ <http://html2canvas.hertzen.com>
-  Copyright (c) 2011 Niklas von Hertzen. All rights reserved.
-  http://www.twitter.com/niklasvh
-
-  Contributor(s):
-      Niklas von Hertzen <http://www.twitter.com/niklasvh>
-      André Fiedler      <http://www.twitter.com/sonnenkiste>
-
-  Released under MIT License
- */
-
 (function(){
 
 _html2canvas.Generate = {};

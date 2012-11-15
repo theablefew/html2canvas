@@ -2,6 +2,7 @@ module.exports = function(grunt) {
 
   var src_files = [ 
                    '<banner:meta.banner>'
+                   ,'src/html2canvas-pre.txt'
                    ,'src/Core.js'
                    ,'src/Generate.js'
                    ,'src/Parse.js'
