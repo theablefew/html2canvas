@@ -9,7 +9,7 @@ module.exports = function(grunt) {
                    ,'src/Queue.js'
                    ,'src/Renderer.js'
                    ,'src/Util.js'
-                   ,'renderers/Canvas.js'
+                   ,'src/renderers/Canvas.js'
                    ,'src/html2canvas-post.txt'
                   ];
 
